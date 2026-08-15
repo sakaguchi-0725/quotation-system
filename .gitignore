@@ -1,0 +1,11 @@
+.DS_Store
+.env
+
+.vscode/*
+!.vscode/extensions.json
+
+.zed
+
+lefthook-local.yml
+
+.claude/settings.local.json
