@@ -1,0 +1,71 @@
+@startuml usecase
+title 見積もり管理システム ユースケース図
+
+left to right direction
+
+actor 営業担当者 as sales
+
+rectangle "見積もり管理システム" {
+  package "取引先管理" {
+    usecase "取引先を登録する" as UC_PartnerCreate
+    usecase "取引先情報を編集する" as UC_PartnerUpdate
+    usecase "取引先を削除する" as UC_PartnerDelete
+    usecase "取引先を検索する" as UC_PartnerSearch
+  }
+
+  package "案件管理" {
+    usecase "案件を登録する" as UC_ProjectCreate
+    usecase "案件情報を編集する" as UC_ProjectUpdate
+    usecase "案件ステータスを更新する" as UC_ProjectStatusUpdate
+    usecase "案件を検索する" as UC_ProjectSearch
+  }
+
+  package "見積管理" {
+    usecase "見積もりを新規作成する" as UC_QuoteCreate
+    usecase "見積もりを改訂する" as UC_QuoteRevise
+    usecase "見積明細を入力する" as UC_QuoteLineInput
+    usecase "見積金額を自動算出する" as UC_QuoteCalculate
+    usecase "見積書をPDF出力する" as UC_QuotePdfExport
+  }
+}
+
+sales -- UC_PartnerCreate
+sales -- UC_PartnerUpdate
+sales -- UC_PartnerDelete
+sales -- UC_PartnerSearch
+
+sales -- UC_ProjectCreate
+sales -- UC_ProjectUpdate
+sales -- UC_ProjectStatusUpdate
+sales -- UC_ProjectSearch
+
+sales -- UC_QuoteCreate
+sales -- UC_QuoteRevise
+sales -- UC_QuotePdfExport
+
+UC_QuoteCreate ..> UC_QuoteLineInput : <<include>>
+UC_QuoteRevise ..> UC_QuoteLineInput : <<include>>
+UC_QuoteLineInput ..> UC_QuoteCalculate : <<include>>
+
+note right of UC_ProjectSearch
+  ステータス（進行中／受注／失注等）や
+  取引先での絞り込みを想定
+end note
+
+note right of UC_ProjectStatusUpdate
+  顧客からの回答（承諾／見送り）を受けて
+  営業担当者が案件ステータスを更新する
+end note
+
+note right of UC_QuoteRevise
+  顧客からの修正依頼を受けた場合に
+  直前バージョンを基に新バージョンを作成する
+end note
+
+note bottom of UC_QuotePdfExport
+  見積もり自体は横断検索の対象としない。
+  案件に紐づくバージョン一覧から辿る想定のため
+  「見積もりを検索する」ユースケースは設けない
+end note
+
+@enduml
