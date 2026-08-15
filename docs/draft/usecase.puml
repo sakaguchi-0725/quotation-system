@@ -13,11 +13,11 @@ rectangle "見積もり管理システム" {
     usecase "取引先を検索する" as UC_PartnerSearch
   }
 
-  package "案件管理" {
-    usecase "案件を登録する" as UC_ProjectCreate
-    usecase "案件情報を編集する" as UC_ProjectUpdate
-    usecase "案件ステータスを更新する" as UC_ProjectStatusUpdate
-    usecase "案件を検索する" as UC_ProjectSearch
+  package "商談管理" {
+    usecase "商談を登録する" as UC_OpportunityCreate
+    usecase "商談情報を編集する" as UC_OpportunityUpdate
+    usecase "商談ステータスを更新する" as UC_OpportunityStatusUpdate
+    usecase "商談を検索する" as UC_OpportunitySearch
   }
 
   package "見積管理" {
@@ -34,10 +34,10 @@ sales -- UC_PartnerUpdate
 sales -- UC_PartnerDelete
 sales -- UC_PartnerSearch
 
-sales -- UC_ProjectCreate
-sales -- UC_ProjectUpdate
-sales -- UC_ProjectStatusUpdate
-sales -- UC_ProjectSearch
+sales -- UC_OpportunityCreate
+sales -- UC_OpportunityUpdate
+sales -- UC_OpportunityStatusUpdate
+sales -- UC_OpportunitySearch
 
 sales -- UC_QuoteCreate
 sales -- UC_QuoteRevise
@@ -47,14 +47,14 @@ UC_QuoteCreate ..> UC_QuoteLineInput : <<include>>
 UC_QuoteRevise ..> UC_QuoteLineInput : <<include>>
 UC_QuoteLineInput ..> UC_QuoteCalculate : <<include>>
 
-note right of UC_ProjectSearch
+note right of UC_OpportunitySearch
   ステータス（進行中／受注／失注等）や
   取引先での絞り込みを想定
 end note
 
-note right of UC_ProjectStatusUpdate
+note right of UC_OpportunityStatusUpdate
   顧客からの回答（承諾／見送り）を受けて
-  営業担当者が案件ステータスを更新する
+  営業担当者が商談ステータスを更新する
 end note
 
 note right of UC_QuoteRevise
@@ -64,7 +64,7 @@ end note
 
 note bottom of UC_QuotePdfExport
   見積もり自体は横断検索の対象としない。
-  案件に紐づくバージョン一覧から辿る想定のため
+  商談に紐づくバージョン一覧から辿る想定のため
   「見積もりを検索する」ユースケースは設けない
 end note
 
