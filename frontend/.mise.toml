@@ -6,5 +6,13 @@ description = ".env.exampleから.envを生成"
 run = "test -f .env || cp .env.example .env"
 
 [tasks.dev]
-description = "ローカル環境の起動"
 run = "pnpm dev"
+
+[tasks.lint]
+run = "pnpm lint"
+
+[tasks.format]
+run = "pnpm format"
+
+[tasks.build]
+run = "pnpm build"
