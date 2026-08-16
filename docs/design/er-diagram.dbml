@@ -1,3 +1,6 @@
+// 以下のリンクから確認可能
+// https://dbdiagram.io/d/quotation-system-6a8138e8c6a866c9077592c2
+
 Enum opportunity_status_enum {
   NOT_CREATED
   QUOTED
