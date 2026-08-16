@@ -1,0 +1,148 @@
+Enum opportunity_status_enum {
+  NOT_CREATED
+  QUOTED
+  WON
+  LOST
+}
+
+Enum estimation_method_enum {
+  BOTTOM_UP
+  FUNCTION_POINT
+}
+
+Enum function_type_enum {
+  EI
+  EO
+  EQ
+  ILF
+  EIF
+}
+
+Enum complexity_enum {
+  LOW
+  AVERAGE
+  HIGH
+}
+
+Enum gsc_item_enum {
+  PERFORMANCE
+  ONLINE_UPDATE
+  COMPLEX_PROCESSING
+  EXTERNAL_INTERFACE
+  DISTRIBUTED_SITES
+  EASE_OF_CHANGE
+}
+
+Table partners {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  contact varchar(255) [not null]
+  closed_at timestamp
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table sales_reps {
+  id bigint [pk, increment]
+  name varchar(255) [not null]
+  resigned_at timestamp
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+Table opportunities {
+  id bigint [pk, increment]
+  partner_id bigint [not null]
+  sales_rep_id bigint [not null]
+  title varchar(255) [not null]
+  status opportunity_status_enum [not null, default: 'NOT_CREATED']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+
+  indexes {
+    partner_id
+    sales_rep_id
+    status
+  }
+}
+
+Ref: opportunities.partner_id > partners.id [delete: restrict]
+Ref: opportunities.sales_rep_id > sales_reps.id [delete: restrict]
+
+Table estimation_settings {
+  id bigint [pk, increment]
+  monthly_rate decimal(13,0) [not null]
+  productivity_rate decimal(9,6) [not null]
+  expired_at timestamp
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table quotes {
+  opportunity_id bigint [not null]
+  version int [not null]
+  estimation_method estimation_method_enum [not null]
+  created_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (opportunity_id, version) [pk]
+  }
+}
+
+Ref: quotes.opportunity_id > opportunities.id [delete: restrict]
+
+Table quote_lines {
+  id bigint [pk, increment]
+  opportunity_id bigint [not null]
+  version int [not null]
+  sort_order int [not null]
+  unit_price decimal(13,0) [not null]
+  quantity decimal(10,2) [not null]
+  condition varchar(255) [not null]
+
+  indexes {
+    (opportunity_id, version, sort_order) [unique]
+  }
+}
+
+Ref: quote_lines.(opportunity_id, version) > quotes.(opportunity_id, version) [delete: cascade]
+
+Table function_point_estimations {
+  opportunity_id bigint [not null]
+  version int [not null]
+  monthly_rate decimal(13,0) [not null]
+  productivity_rate decimal(9,6) [not null]
+
+  indexes {
+    (opportunity_id, version) [pk]
+  }
+}
+
+Ref: function_point_estimations.(opportunity_id, version) > quotes.(opportunity_id, version) [delete: cascade]
+
+Table function_point_items {
+  id bigint [pk, increment]
+  opportunity_id bigint [not null]
+  version int [not null]
+  function_type function_type_enum [not null]
+  complexity complexity_enum [not null]
+  count int [not null]
+
+  indexes {
+    (opportunity_id, version, function_type, complexity) [unique]
+  }
+}
+
+Ref: function_point_items.(opportunity_id, version) > function_point_estimations.(opportunity_id, version) [delete: cascade]
+
+Table gsc_scores {
+  opportunity_id bigint [not null]
+  version int [not null]
+  gsc_item gsc_item_enum [not null]
+  score int [not null, check: `score >= 0 AND score <= 5`]
+
+  indexes {
+    (opportunity_id, version, gsc_item) [pk]
+  }
+}
+
+Ref: gsc_scores.(opportunity_id, version) > function_point_estimations.(opportunity_id, version) [delete: cascade]
