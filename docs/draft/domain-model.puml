@@ -1,0 +1,151 @@
+@startuml domain-model
+title 見積もり管理システム ドメインモデル（集約図）
+
+hide circle
+skinparam classAttributeIconSize 0
+
+package "取引先" {
+  class "取引先" as Partner <<集約ルート>> {
+    +id: 取引先ID
+    +name: 取引先名
+    +contact: 連絡先
+    +closedAt: 取引終了日
+  }
+}
+
+package "営業担当者" {
+  class "営業担当者" as SalesRep <<集約ルート>> {
+    +id: 営業担当者ID
+    +name: 氏名
+    +resignedAt: 退職日
+  }
+}
+
+package "商談" {
+  class "商談" as Opportunity <<集約ルート>> {
+    +id: 商談ID
+    +partnerId: 取引先ID
+    +salesRepId: 営業担当者ID
+    +title: 商談名
+    +status: 商談ステータス
+  }
+
+  enum "商談ステータス" as OpportunityStatus {
+    NOT_CREATED: 未作成
+    QUOTED: 提示中（回答待ち）
+    WON: 受注
+    LOST: 失注
+  }
+
+  Opportunity *-- OpportunityStatus
+}
+
+package "見積もり単価設定" {
+  class "見積もり単価設定" as EstimationSettings <<集約ルート>> {
+    +monthlyRate: 人月単価
+    +productivityRate: 生産性係数
+    +expiredAt: 失効日
+  }
+
+  note bottom of EstimationSettings
+    monthlyRate: 900,000円 / 人月
+    productivityRate: 0.0625人月 / FP（16FPで1人月相当）
+  end note
+}
+
+package "見積もり" {
+  class "見積もり" as Quote <<集約ルート>> {
+    +opportunityId: 商談ID
+    +version: バージョン
+    +estimationMethod: 見積もり方式
+  }
+
+  enum "見積もり方式" as EstimationMethod {
+    BOTTOM_UP: ボトムアップ法
+    FUNCTION_POINT: ファンクションポイント法
+  }
+
+  class "見積明細" as QuoteLine <<値オブジェクト>> {
+    +unitPrice: 単価
+    +quantity: 数量
+    +condition: 条件
+  }
+
+  class "ファンクションポイント見積" as FunctionPointEstimation <<値オブジェクト>> {
+    +monthlyRate: 人月単価
+    +productivityRate: 生産性係数
+  }
+
+  class "機能項目" as FunctionPointItem <<値オブジェクト>> {
+    +functionType: 機能種別
+    +complexity: 複雑度
+    +count: 個数
+  }
+
+  enum "機能種別" as FunctionType {
+    EI: 外部入力
+    EO: 外部出力
+    EQ: 外部照会
+    ILF: 内部論理ファイル
+    EIF: 外部インターフェースファイル
+  }
+
+  enum "複雑度" as Complexity {
+    LOW: 低
+    AVERAGE: 中
+    HIGH: 高
+  }
+
+  class "GSC評価" as GscScore <<値オブジェクト>> {
+    +item: GSC項目
+    +score: 点数
+  }
+
+  enum "GSC項目" as GscItem {
+    PERFORMANCE: 性能要件
+    ONLINE_UPDATE: オンライン更新
+    COMPLEX_PROCESSING: 複雑な処理
+    EXTERNAL_INTERFACE: 外部システム連携
+    DISTRIBUTED_SITES: 複数拠点・分散処理
+    EASE_OF_CHANGE: 変更のしやすさ
+  }
+
+  class "バージョン" as Version <<値オブジェクト>> {
+    +number: 整数
+  }
+
+  class "見積金額" as QuoteAmount <<値オブジェクト>> {
+    +total: 金額
+  }
+
+  Quote *-- EstimationMethod
+  Quote "1" *-- "0..*" QuoteLine : 内訳（ボトムアップ法）
+  Quote "1" *-- "0..1" FunctionPointEstimation : 内訳（FP法）
+  FunctionPointEstimation "1" *-- "1..*" FunctionPointItem
+  FunctionPointEstimation "1" *-- "6" GscScore : GSC項目ごとに1件
+  FunctionPointItem *-- FunctionType
+  FunctionPointItem *-- Complexity
+  GscScore *-- GscItem
+  Quote *-- Version
+  Quote ..> QuoteAmount : 算出
+  QuoteLine ..> QuoteAmount : 合算（ボトムアップ法）
+  FunctionPointEstimation ..> QuoteAmount : 合算（FP法）
+}
+
+Opportunity ..> Partner : 取引先IDで参照
+Opportunity ..> SalesRep : 営業担当者IDで参照
+Quote ..> Opportunity : 商談IDで参照
+FunctionPointEstimation ..> EstimationSettings : 作成時にmonthlyRate/productivityRateをスナップショット
+
+note bottom of Quote
+  代理キーは持たず、opportunityId + version の組で一意に識別する
+  estimationMethodに応じてQuoteLineかFunctionPointEstimationの
+  どちらか一方のみが存在する（両方存在・両方空は不正）
+end note
+
+note bottom of QuoteAmount
+  見積明細（ボトムアップ法）またはファンクションポイント見積（FP法）から
+  算出される導出値であり、直接編集不可
+end note
+
+@enduml
