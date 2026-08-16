@@ -9,7 +9,7 @@ rectangle "見積もり管理システム" {
   package "取引先管理" {
     usecase "取引先を登録する" as UC_PartnerCreate
     usecase "取引先情報を編集する" as UC_PartnerUpdate
-    usecase "取引先を削除する" as UC_PartnerDelete
+    usecase "取引先との取引を終了する" as UC_PartnerDelete
     usecase "取引先を検索する" as UC_PartnerSearch
   }
 
