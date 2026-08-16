@@ -1,0 +1,11 @@
+pre-commit:
+  commands:
+    frontend-format:
+      root: "frontend/"
+      glob: "frontend/**/*"
+      run: mise run format:staged -- {staged_files}
+      stage_fixed: true
+    frontend-lint:
+      root: "frontend/"
+      glob: "frontend/**/*.{ts,mts,tsx,vue}"
+      run: mise run lint:staged -- {staged_files}

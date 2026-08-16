@@ -11,8 +11,14 @@ run = "pnpm dev"
 [tasks.lint]
 run = "pnpm lint"
 
+[tasks."lint:staged"]
+run = "pnpm lint:staged"
+
 [tasks.format]
 run = "pnpm format"
+
+[tasks."format:staged"]
+run = "pnpm format:staged"
 
 [tasks.build]
 run = "pnpm build"
