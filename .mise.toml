@@ -1,0 +1,6 @@
+[tools]
+node = "26.7.0"
+
+[tasks.setup]
+description = "各ワークスペースのセットアップを実行"
+run = ["mise -C frontend run setup"]
