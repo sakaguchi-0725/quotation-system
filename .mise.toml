@@ -4,4 +4,7 @@ lefthook = "2.1.10"
 
 [tasks.setup]
 description = "各ワークスペースのセットアップを実行"
-run = ["mise -C frontend run setup"]
+run = [
+    "lefthook install",
+    "mise -C frontend run setup"
+]
