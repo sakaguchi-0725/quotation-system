@@ -28,6 +28,15 @@ export default defineConfigWithVueTs(
       ],
       'func-style': ['error', 'expression', { allowArrowFunctions: true }],
       'prefer-arrow-callback': 'error',
+      'vue/component-name-in-template-casing': ['error', 'PascalCase'],
+    },
+  },
+
+  {
+    name: 'app/shared-ui-single-word-component-names',
+    files: ['src/shared/ui/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
     },
   },
 
