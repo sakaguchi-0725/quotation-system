@@ -58,6 +58,10 @@ type FetchState =
 
 - 型のみの import / export には `import type` / `export type` を付ける
 
+## ファイル名
+
+- ファイル名はケバブケースで統一する
+
 ## コメント
 
 - **コメントは書かない。これを既定とする**
