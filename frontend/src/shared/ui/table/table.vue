@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="TRow extends Record<string, unknown>">
 import { computed } from 'vue'
 
 type Column = {
@@ -7,17 +7,15 @@ type Column = {
   width?: string
 }
 
-type TableRow = Record<string, unknown>
-
 const props = defineProps<{
   columns?: Column[]
-  rows?: TableRow[]
+  rows?: TRow[]
 }>()
 
 const columns = computed(() => props.columns ?? [])
 const rows = computed(() => props.rows ?? [])
 
-const rowKey = (row: TableRow, index: number) => {
+const rowKey = (row: TRow, index: number) => {
   const id = row.id
   return typeof id === 'string' || typeof id === 'number' ? id : index
 }
@@ -53,5 +51,6 @@ const rowKey = (row: TableRow, index: number) => {
         </tr>
       </tbody>
     </table>
+    <slot name="footer" />
   </div>
 </template>

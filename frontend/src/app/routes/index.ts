@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { HomePage } from '@/pages/home'
+import { customersRoutes } from './customers'
+import { dealsRoutes } from './deals'
+import { quoteRateSettingsRoutes } from './quote-rate-settings'
 
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomePage,
-  },
+  { path: '/', redirect: '/deals' },
+  ...customersRoutes,
+  ...dealsRoutes,
+  ...quoteRateSettingsRoutes,
 ]
 
 export const router = createRouter({
